@@ -1,4 +1,4 @@
-import { socket } from "./socketConnection.js";
+const peerLoockupUrl = "https://extreme-ip-lookup.com/json/?key=demo2"; // get your API Key at https://extreme-ip-lookup.com
 
 async function handleAddPeer(config) {
     // console.log("addPeer", JSON.stringify(config));
@@ -6,7 +6,6 @@ async function handleAddPeer(config) {
     let peerArr = Object.entries(peers);
     sessionStorage.setItem("peerArr", JSON.stringify(peerArr));
 }
-
 
 function getSessionPeer() {
     let peerList = [];

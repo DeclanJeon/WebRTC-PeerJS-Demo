@@ -5,11 +5,14 @@ import { socket } from "./socketConnection.js";
 import { peer } from "./peerConnection.js";
 import { constraints, displayMediaConfig } from "./rtc_settings.js";
 import { chat } from "./chat.js";
-import { sendToServer, makeId } from "./module.js";
+import {
+    sendToServer,
+    makeId,
+    getConnectedDevices,
+    selectAllDom,
+} from "./module.js";
 import { handleAddPeer, getPeerInfo } from "./vo.js";
 
-let mySocketId = null;
-let myPeerName = null;
 const shareScreenBtn = document.getElementById("shareScreen");
 const showChat = document.querySelector("#showChat");
 
@@ -22,7 +25,7 @@ let getPeers;
 let myPeerId = null;
 let userName = null;
 let remotePeer = null;
-let currentPeer;
+export let currentPeer;
 let currentPeerId;
 let captureStream = null;
 let myScreenStream = null;
@@ -40,6 +43,8 @@ let myHandStatus = false;
 let myVideoStatus = false;
 let myAudioStatus = false;
 let myScreenStatus = false;
+let mySocketId = null;
+let myPeerName = null;
 
 // VideoTrack, AudioTrack
 let camVideoTrack = null;
@@ -60,16 +65,9 @@ const isWebRTCSupported = DetectRTC.isWebRTCSupported;
 const isMobileDevice = DetectRTC.isMobileDevice;
 const myBrowserName = DetectRTC.browser.name;
 
-const peerLoockupUrl = "https://extreme-ip-lookup.com/json/?key=demo2"; // get your API Key at https://extreme-ip-lookup.com
-
 // video: { facingMode: "user" }
 // facingMode: { exact: "environment" }
 // 참고 : https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
-
-const getConnectedDevices = async () => {
-    let devices = await navigator.mediaDevices.enumerateDevices();
-    console.log(devices);
-};
 
 async function videoCall() {
     getConnectedDevices();
@@ -240,7 +238,7 @@ function addVideoStream(elem, stream) {
         }
     }
 
-    document.querySelectorAll("#video__container").forEach((elem) => {
+    selectAllDom("#video__container").forEach((elem) => {
         if (elem.children.length === 0 || elem.children.length === 1) {
             elem.remove();
         }
@@ -298,15 +296,7 @@ async function getDisplayMedia(options) {
 
 /*************************** Common Modules ************************* */
 
-const popupFileShareContainer = () => {
-    
-}
-
-const localFileShare = () => {
-    
-}
-
-function replaceStream(peerConnection, mediaStream) {
+export function replaceStream(peerConnection, mediaStream) {
     for (let sender of peerConnection.getSenders()) {
         if (sender.track.kind == "audio") {
             if (mediaStream.getAudioTracks().length > 0) {
@@ -388,7 +378,6 @@ async function handleConnect() {
 
     sessionStorage.setItem("peer-name", myPeerName);
     sessionStorage.setItem("socket-id", mySocketId);
-
     await videoCall();
     await joinToChannel();
 }
@@ -425,7 +414,7 @@ function handleRemovePeer(config) {
         config.peer_id !== null ||
         config.peer_id !== undefined
     ) {
-        remoteVideos = document.querySelectorAll("#remote__video");
+        remoteVideos = selectAllDom("#remote__video");
         remoteVideos.forEach((item) => {
             if (item.classList.value.includes(config.peer_id)) {
                 item.remove();
@@ -440,7 +429,7 @@ function handleRemovePeer(config) {
         });
     }
 
-    document.querySelectorAll("#video__container").forEach((elem) => {
+    selectAllDom("#video__container").forEach((elem) => {
         if (elem.children.length === 0 || elem.children.length === 1) {
             elem.remove();
         }
@@ -449,6 +438,6 @@ function handleRemovePeer(config) {
 
 /*************************** Common Modules End ************************* */
 
-window.addEventListener("load", initClientPeer);
+initClientPeer();
 shareScreenBtn.addEventListener("click", shareScreen);
 showChat.addEventListener("click", chat);

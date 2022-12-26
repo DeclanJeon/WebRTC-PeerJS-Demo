@@ -1,6 +1,7 @@
 import { socket } from "./socketConnection.js";
 
 let isHttps = false;
+let body = document.body;
 
 /**
  * Generate random Room id if not set
@@ -35,22 +36,38 @@ function makeId(length) {
 
 // 타켓 요소 끝나는 태그 바로 직전(자식요소로)에 요소를 생성 - 종료 태그 앞(자식 요소로)
 function addDomBeforeEnd(dom, element) {
-    dom.insertAdjacentHTML("beforeend", element);
+    if (dom === null) {
+        body.insertAdjacentHTML("beforeend", element);
+    } else {
+        dom.insertAdjacentHTML("beforeend", element);
+    }
 }
 
 // 타켓 요소 전(형제레벨)에 생성- 시작 태그의 앞(형제 레벨로)
 function addDomBeforeBegin(dom, element) {
-    dom.insertAdjacentHTML("beforebegin", element);
+    if (dom === null) {
+        body.insertAdjacentHTML("beforebegin", element);
+    } else {
+        dom.insertAdjacentHTML("beforebegin", element);
+    }
 }
 
 // 타켓 요소 다음(자식요소)에 생성 - 시작 태그의 뒤(자식 요소로)
 function addDomAfterBegin(dom, element) {
-    dom.insertAdjacentHTML("afterbegin", element);
+    if (dom === null) {
+        body.insertAdjacentHTML("afterbegin", element);
+    } else {
+        dom.insertAdjacentHTML("afterbegin", element);
+    }
 }
 
 // 타켓 요소의 끝나는 태그 바로 다음(형제레벨)에 요소를 생성 - 종료 태그 뒤(형제 레벨로)
 function addDomAfterEnd(dom, element) {
-    dom.insertAdjacentHTML("afterend", element);
+    if (dom === null) {
+        body.insertAdjacentHTML("afterend", element);
+    } else {
+        dom.insertAdjacentHTML("afterend", element);
+    }
 }
 
 function appendDom(dom, element) {
@@ -70,8 +87,18 @@ function createDom(element) {
     return dom;
 }
 
+function selectDom(element) {
+    let dom = document.querySelector(element);
+    return dom;
+}
+
+function selectAllDom(element) {
+    let dom = document.querySelectorAll(element);
+    return dom;
+}
+
 function removeDom(element) {
-    let dom = document.querySelector(`.${element}`);
+    let dom = document.querySelector(element);
     dom.remove();
 }
 
@@ -118,6 +145,11 @@ function scrollToBottom(elem) {
     d.scrollTop = d.scrollHeight;
 }
 
+const getConnectedDevices = async () => {
+    let devices = await navigator.mediaDevices.enumerateDevices();
+    return devices;
+};
+
 /**
  * Send async data to signaling server (server.js)
  * @param {string} msg msg to send to signaling server
@@ -137,8 +169,11 @@ export {
     appendDom,
     appendChildDom,
     createDom,
+    selectDom,
+    selectAllDom,
     removeDom,
     draggable,
     scrollToBottom,
     sendToServer,
+    getConnectedDevices,
 };

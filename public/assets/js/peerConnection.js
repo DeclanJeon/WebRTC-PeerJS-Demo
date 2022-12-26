@@ -1,4 +1,4 @@
-const peer = new Peer({
+const peer = new Peer(undefined, {
     initiator: true,
     trickle: false,
     config: {

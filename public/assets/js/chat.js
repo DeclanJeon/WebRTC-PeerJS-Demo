@@ -13,7 +13,7 @@ const chat = () => {
 
 const chatEnable = () => {
     const chatElem = `
-    <div class="popup__message">
+    <div class="popup__message" hidden="false">
         <div class="popup__chat_window">
             <div class="messages" id="messages"></div>
         </div>
@@ -23,21 +23,28 @@ const chatEnable = () => {
                 <i class="fas fa-paper-plane" aria-hidden="true"></i>
             </div>
         </div>
-    </div>
-`;
-
-    document.body.insertAdjacentHTML("beforeend", chatElem);
+    </div>`;
 
     msgPopup = document.querySelector(".popup__message");
-    msgPopup.style.setProperty("display", "flex");
 
+    if (!msgPopup) {
+        document.body.insertAdjacentHTML("beforeend", chatElem);
+
+        msgPopup = document.querySelector(".popup__message");
+        msgPopup.hidden = false;
+        // msgPopup.style.setProperty("display", "flex");
+    } else {
+        // msgPopup.style.setProperty("display", "flex");
+        msgPopup.hidden = false;
+    }
     draggable(msgPopup);
     handleChatEvent();
 };
 
 const chatDisable = () => {
     msgPopup = document.querySelector(".popup__message");
-    msgPopup.style.setProperty("display", "none");
+    msgPopup.hidden = true;
+    // msgPopup.style.setProperty("display", "none");
 };
 
 const handleChatEvent = () => {

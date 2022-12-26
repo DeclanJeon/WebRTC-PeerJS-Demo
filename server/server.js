@@ -107,8 +107,13 @@ io = new Server({
 }).listen(server);
 
 io.sockets.on("connect", async (socket) => {
+    const ip =
+        socket.request.headers["x-forwarded-for"] ||
+        socket.request.connection.remoteAddress;
+
     log.debug("[" + socket.id + "] connection accepted", {
         host: socket.handshake.headers.host.split(":")[0],
+        ip: ip,
     });
 
     socket.channels = {};
@@ -139,6 +144,10 @@ io.sockets.on("connect", async (socket) => {
         }
         log.debug("[" + socket.id + "] disconnected", { reason: reason });
         delete sockets[socket.id];
+    });
+
+    socket.on("error", (error) => {
+        log.debug("[" + socket.id + "] error", { error: error });
     });
 
     socket.on("join", async (config) => {
