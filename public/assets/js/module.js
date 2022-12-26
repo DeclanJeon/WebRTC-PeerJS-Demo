@@ -1,0 +1,144 @@
+import { socket } from "./socketConnection.js";
+
+let isHttps = false;
+
+/**
+ * Generate random Room id if not set
+ * @returns {string} Room Id
+ */
+function getRoomId() {
+    const signalingServer = window.location.href;
+
+    let roomId = makeId(5);
+    const newUrl = signalingServer + roomId;
+    window.history.pushState({ url: newUrl }, roomId, newUrl);
+    return roomId;
+}
+
+/**
+ * Generate random Id
+ * @param {integer} length
+ * @returns {string} random id
+ */
+function makeId(length) {
+    let result = "";
+    let characters =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let charactersLength = characters.length;
+    for (let i = 0; i < length; i++) {
+        result += characters.charAt(
+            Math.floor(Math.random() * charactersLength)
+        );
+    }
+    return result;
+}
+
+// 타켓 요소 끝나는 태그 바로 직전(자식요소로)에 요소를 생성 - 종료 태그 앞(자식 요소로)
+function addDomBeforeEnd(dom, element) {
+    dom.insertAdjacentHTML("beforeend", element);
+}
+
+// 타켓 요소 전(형제레벨)에 생성- 시작 태그의 앞(형제 레벨로)
+function addDomBeforeBegin(dom, element) {
+    dom.insertAdjacentHTML("beforebegin", element);
+}
+
+// 타켓 요소 다음(자식요소)에 생성 - 시작 태그의 뒤(자식 요소로)
+function addDomAfterBegin(dom, element) {
+    dom.insertAdjacentHTML("afterbegin", element);
+}
+
+// 타켓 요소의 끝나는 태그 바로 다음(형제레벨)에 요소를 생성 - 종료 태그 뒤(형제 레벨로)
+function addDomAfterEnd(dom, element) {
+    dom.insertAdjacentHTML("afterend", element);
+}
+
+function appendDom(dom, element) {
+    if (element !== undefined) {
+        dom.append(element);
+    }
+}
+
+function appendChildDom(dom, element) {
+    if (element !== undefined) {
+        dom.appendChild(element);
+    }
+}
+
+function createDom(element) {
+    let dom = document.createElement(element);
+    return dom;
+}
+
+function removeDom(element) {
+    let dom = document.querySelector(`.${element}`);
+    dom.remove();
+}
+
+const draggable = (target) => {
+    let isPress = false,
+        prevPosX = 0,
+        prevPosY = 0;
+
+    if (target !== null) {
+        target.onmousedown = start;
+        target.onmouseup = end;
+
+        // 상위 영역
+        window.onmousemove = move;
+
+        function start(e) {
+            prevPosX = e.clientX;
+            prevPosY = e.clientY;
+
+            isPress = true;
+        }
+
+        function move(e) {
+            if (!isPress) return;
+
+            const posX = prevPosX - e.clientX;
+            const posY = prevPosY - e.clientY;
+
+            prevPosX = e.clientX;
+            prevPosY = e.clientY;
+
+            target.style.left = target.offsetLeft - posX + "px";
+            target.style.top = target.offsetTop - posY + "px";
+        }
+
+        function end() {
+            isPress = false;
+        }
+    }
+};
+
+function scrollToBottom(elem) {
+    let d = document.querySelector(`.${elem}`);
+    d.scrollTop = d.scrollHeight;
+}
+
+/**
+ * Send async data to signaling server (server.js)
+ * @param {string} msg msg to send to signaling server
+ * @param {object} config data to send to signaling server
+ */
+async function sendToServer(msg, config = {}) {
+    await socket.emit(msg, config);
+}
+
+export {
+    getRoomId,
+    makeId,
+    addDomBeforeEnd,
+    addDomBeforeBegin,
+    addDomAfterBegin,
+    addDomAfterEnd,
+    appendDom,
+    appendChildDom,
+    createDom,
+    removeDom,
+    draggable,
+    scrollToBottom,
+    sendToServer,
+};

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <base href="/">
+
+    <!-- <link rel="shortcut icon" href="favicon.ico"> -->
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <script src="/socket.io/socket.io.js"></script>
+    <!-- PeerJS -->
+    <script src="/peerjs/dist/peerjs.min.js"></script>
+    <!-- Jquery -->
+    <script src="/jquery/dist/jquery.min.js"></script>
+    <!-- Axios -->
+    <script src="/axios/dist/axios.min.js"></script>
+    <!-- DetectRTC -->
+    <script src="/detectrtc/DetectRTC.min.js"></script>
+    <!-- Moment -->
+    <script src="/moment/moment.js"></script>
+    <!-- loadash -->
+    <script src="/lodash/lodash.min.js"></script>
+    <!-- DotGUI -->
+    <script src="/dat.gui/build/dat.gui.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.5.3/js/bootstrap.min.js"></script>
+    <script>
+        const ROOM_ID = '<%= roomId %>';
+    </script>
+
+    <title>
+        <%= title %>
+    </title>
+</head>
+
+<body>
+    <div class="main">
+        <div class="main__front">
+            <div class="videos__group">
+                <div id="video-grid"></div>
+            </div>
+            <div class="options">
+                <div class="options__left">
+                    <div id="muteVideo" class="options__button">
+                        <i id="videoIcon" class="fas fa-video"></i>
+                    </div>
+                    <div id="muteAudio" class="options__button">
+                        <i id="audioIcon" class="fa fa-microphone"></i>
+                    </div>
+                    <div id="showChat" class="options__button">
+                        <i id="chatIcon" class="fa fa-comment"></i>
+                    </div>
+                    <div id="shareScreen" class="options__button">
+                        <i class="fas fa-share-square"></i>
+                    </div>
+
+                    <div id="showFiles" class="options__button">
+                        <i class="fa-solid fa-files"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script async defer type="module" src="js/client.js"></script>
+    <script async defer src="js/gui.js"></script>
+</body>
+
+</html>
