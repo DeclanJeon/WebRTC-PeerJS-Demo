@@ -9,12 +9,14 @@ import {
     sendToServer,
     makeId,
     getConnectedDevices,
+    createDom,
+    selectDom,
     selectAllDom,
 } from "./module.js";
 import { handleAddPeer, getPeerInfo } from "./vo.js";
 
 const shareScreenBtn = document.getElementById("shareScreen");
-const showChat = document.querySelector("#showChat");
+const showChat = selectDom("#showChat");
 
 let myVideoStream;
 let peers = {};
@@ -73,7 +75,7 @@ async function videoCall() {
     getConnectedDevices();
     const stream = await navigator.mediaDevices.getUserMedia(constraints);
 
-    const lVideo = document.createElement("video");
+    const lVideo = createDom("video");
     lVideo.id = "local__video";
     lVideo.muted = true;
     lVideo.volume = 0;
@@ -87,7 +89,7 @@ async function videoCall() {
 
     myVideoStream = stream;
     addVideoStream(lVideo, stream);
-    handlerMute(myVideoStream);
+    handlerMute(stream);
 
     let video = null;
 
@@ -95,7 +97,7 @@ async function videoCall() {
         peer.on("call", (call) => {
             console.log("peer Call");
 
-            video = document.createElement("video");
+            video = createDom("video");
             video.id = "remote__video";
             remotePeer = call.peer;
             video.className = remotePeer;
@@ -149,7 +151,7 @@ peer.on("open", async (id) => {
     peerList.push(id);
     myPeerId = id;
 
-    local__video = document.querySelector("#local__video");
+    local__video = selectDom("#local__video");
     if (local__video) {
         local__video.classList.add(id);
     }
@@ -165,8 +167,8 @@ async function connectToNewUser(userId, userName, stream) {
         call.peer_name = userName;
     }
 
-    if (call !== undefined || call.peer !== null) {
-        const video = document.createElement("video");
+    if (call !== null || call.peer !== null) {
+        const video = createDom("video");
         video.setAttribute("id", "remote__video");
         call.on("stream", (userVideoStream) => {
             if (!peerList.includes(call.peer)) {
@@ -189,6 +191,8 @@ async function connectToNewUser(userId, userName, stream) {
         });
 
         peers[userId] = call;
+    } else {
+        console.log("Call is not Peer Call");
     }
 }
 
@@ -210,7 +214,7 @@ peer.on("connection", (conn) => {
 });
 
 function addVideoStream(elem, stream) {
-    const videoGrid = document.querySelector("#video-grid");
+    const videoGrid = selectDom("#video-grid");
 
     if (elem.tagName === "VIDEO") {
         elem.srcObject = stream;
@@ -224,8 +228,8 @@ function addVideoStream(elem, stream) {
             elem.play();
         });
 
-        const videoCtr = document.createElement("div");
-        const nameSpan = document.createElement("span");
+        const videoCtr = createDom("div");
+        const nameSpan = createDom("span");
         videoCtr.id = "video__container";
         nameSpan.id = "userName";
         videoCtr.append(elem, nameSpan);

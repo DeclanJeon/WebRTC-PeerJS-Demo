@@ -12,12 +12,12 @@ import { currentPeer, replaceStream } from "./client.js";
 let fileManagerEnabled = false;
 let inventoryActive = false;
 let selectFileManager;
+let saveCamStream;
+let saveFileStream;
 let fileAddBtn;
 let reader;
 let blob;
 let url;
-
-let fileStream;
 
 const selectBtn = selectDom("#showFiles");
 
@@ -110,20 +110,20 @@ const inventoryDisable = () => {
 const maybeCreateStream = () => {
     let localVideo = selectDom("#local__video");
 
-    if (fileStream) {
+    if (saveFileStream) {
         return;
     }
     if (localVideo.captureStream) {
-        fileStream = localVideo.captureStream();
+        saveFileStream = localVideo.captureStream();
         console.log(
             "Captured stream from localVideo with captureStream",
-            fileStream
+            saveFileStream
         );
     } else if (localVideo.mozCaptureStream) {
-        fileStream = localVideo.mozCaptureStream();
+        saveFileStream = localVideo.mozCaptureStream();
         console.log(
             "log stream from video with mozCaptureStream()",
-            fileStream
+            saveFileStream
         );
     } else {
         console.log("captureStream() not supported");
@@ -132,7 +132,7 @@ const maybeCreateStream = () => {
     let streamInterval = setInterval(() => {
         if (currentPeer !== undefined) {
             clearInterval(streamInterval);
-            replaceStream(currentPeer, fileStream);
+            replaceStream(currentPeer, saveFileStream);
         }
     }, 500);
 };
@@ -171,28 +171,8 @@ function FileReaderEvent(file) {
     };
 
     reader.onloadend = (e) => {
-        // let video = createDom("video");
-
         let localVideo = selectDom("#local__video");
-        let saveCamStream = localVideo.srcObject;
-
-        localVideo.srcObject = null;
-        localVideo.src = url;
-        // localVideo.src = url;
-
-        // let videoGrid = selectDom("#video-grid");
-        // let videoContainer = createDom("div");
-        // videoContainer.id = "video__container";
-        // appendDom(videoContainer, video);
-        // appendDom(videoGrid, videoContainer);
-
-        localVideo.oncanplay = maybeCreateStream;
-        if (localVideo.readyState >= 3) {
-            maybeCreateStream();
-        }
-
-        localVideo.play();
-
+        handleReadVideoFile(localVideo);
         console.log("File load completed successfully loaded.");
     };
 
@@ -208,5 +188,110 @@ function FileReaderEvent(file) {
         }
     };
 }
+
+const handleReadVideoFile = (video) => {
+    handleMediaPlay(video);
+    addDomBeforeEnd(video.parentElement, controllerElem);
+
+    let playing = false;
+
+    $(".circle-ctrl").on("click", () => {
+        playing = !playing;
+        let animation = playing ? "stop" : "play";
+        $("#animate_to_" + animation)
+            .get(0)
+            .beginElement();
+
+        handleStopAndStartMedia(
+            playing,
+            saveCamStream,
+            saveFileStream,
+            video,
+            url
+        );
+    });
+};
+
+const handleMediaPlay = (video) => {
+    saveCamStream = video.srcObject;
+    video.srcObject = null;
+    video.src = url;
+
+    video.oncanplay = maybeCreateStream;
+    if (video.readyState >= 3) {
+        maybeCreateStream();
+    }
+
+    video.play();
+};
+
+const handleStopAndStartMedia = (state, camStream, fileStream, elem) => {
+    if (state === "stop") {
+        if (fileStream) fileStream.getTracks().forEach((track) => track.stop());
+        elem.src = "";
+        elem.srcObject = camStream;
+        replaceStream(currentPeer, camStream);
+    } else {
+        camStream = elem.srcObject;
+        if (camStream) camStream.getTracks().forEach((track) => track.stop());
+        handleMediaPlay(elem);
+        replaceStream(currentPeer, stream);
+    }
+};
+
+const controllerElem = `
+<svg class="circle-ctrl" viewbox="0 0 140 140">
+    <circle cx="70" cy="70" r="65" style="fill:#161d29;stroke:#1d2635"/>
+    <polygon id="shape" points="50,40 100,70 100,70 50,100, 50,40" style="fill:#fff;">
+    <animate 
+        id="animate_to_stop" 
+        begin="indefinite" 
+        fill="freeze" 
+        attributeName="points" 
+        dur="500ms" 
+        to="45,45 95,45 95,95, 45,95 45,45"
+        keySplines="
+        0.1 0.8 0.2 1; 
+        0.1 0.8 0.2 1; 
+        0.1 0.8 0.2 1; 
+        0.1 0.8 0.2 1; 
+        0.1 0.8 0.2 1; 
+        0.1 0.8 0.2 1"
+        keyTimes="0;0.22;0.33;0.55;0.66;0.88;1" 
+        calcMode="spline"
+    />
+    
+    <animate 
+        id="animate_to_play" 
+        begin="indefinite" 
+        fill="freeze" 
+        attributeName="points" 
+        dur="500ms" 
+        to="50,40 100,70 100,70 50,100, 50,40" 
+        keySplines="
+        0.1 0.8 0.2 1; 
+        0.1 0.8 0.2 1; 
+        0.1 0.8 0.2 1; 
+        0.1 0.8 0.2 1; 
+        0.1 0.8 0.2 1; 
+        0.1 0.8 0.2 1"
+        keyTimes="0;0.22;0.33;0.55;0.66;0.88;1" 
+        calcMode="spline"
+    />
+    </polygon>
+</svg>
+`;
+
+const handleReadAudioFile = (audio) => {};
+
+const handleReadPdfFile = (pdf) => {};
+
+const handleReadImgFile = (img) => {};
+
+const handleReadTextFile = (txt) => {};
+
+const handleReadExcelFile = (excel) => {};
+
+const handleDelFile = (elem) => {};
 
 selectBtn.addEventListener("click", handleShowFileInventory);
