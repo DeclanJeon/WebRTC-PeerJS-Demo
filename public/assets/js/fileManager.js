@@ -190,7 +190,7 @@ function FileReaderEvent(file) {
 }
 
 const handleReadVideoFile = (video) => {
-    handleMediaPlay(video);
+    handleFileMediaPlay(video);
     addDomBeforeEnd(video.parentElement, controllerElem);
 
     let playing = false;
@@ -202,17 +202,11 @@ const handleReadVideoFile = (video) => {
             .get(0)
             .beginElement();
 
-        handleStopAndStartMedia(
-            playing,
-            saveCamStream,
-            saveFileStream,
-            video,
-            url
-        );
+        handleStopAndStartMedia(animation, video);
     });
 };
 
-const handleMediaPlay = (video) => {
+const handleFileMediaPlay = (video) => {
     saveCamStream = video.srcObject;
     video.srcObject = null;
     video.src = url;
@@ -225,17 +219,18 @@ const handleMediaPlay = (video) => {
     video.play();
 };
 
-const handleStopAndStartMedia = (state, camStream, fileStream, elem) => {
+const handleStopAndStartMedia = (state, video) => {
     if (state === "stop") {
-        if (fileStream) fileStream.getTracks().forEach((track) => track.stop());
-        elem.src = "";
-        elem.srcObject = camStream;
-        replaceStream(currentPeer, camStream);
-    } else {
-        camStream = elem.srcObject;
-        if (camStream) camStream.getTracks().forEach((track) => track.stop());
-        handleMediaPlay(elem);
-        replaceStream(currentPeer, stream);
+        video.src = "";
+        video.srcObject = saveCamStream;
+        if (saveCamStream !== undefined && currentPeer !== undefined) {
+            replaceStream(currentPeer, saveCamStream);
+        }
+    } else if (state === "play") {
+        handleFileMediaPlay(video);
+        if (saveFileStream !== undefined && currentPeer !== undefined) {
+            replaceStream(currentPeer, saveFileStream);
+        }
     }
 };
 

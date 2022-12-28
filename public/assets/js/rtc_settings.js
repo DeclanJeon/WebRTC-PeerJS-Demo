@@ -7,7 +7,7 @@ const constraints = {
     audio: {
         autoGainControl: true,
         echoCancellation: true,
-        noiseSuppression: true,
+        noiseSuppression: false,
         echoCancellationType: "browser" || "system",
         channelCount: 2,
         latency: 0,
