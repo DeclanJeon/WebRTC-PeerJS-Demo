@@ -15,9 +15,15 @@
 }
 
 .file_manager .file a:hover .hover,
-.file_manager .file .file-name small {
+.file_manager .file {
     display: block;
 }
+
+.file_manager .file-info small {
+    display: flex;
+    gap: 5px;
+}
+
 .file_manager .file {
     padding: 0 !important;
 }
@@ -66,13 +72,18 @@
     line-height: 100px;
 }
 
-.file_manager .file .file-name {
+.file_manager .file .file-info {
     padding: 10px;
     border-top: 1px solid #f7f7f7;
 }
 
-.file_manager .file .file-name small .date {
+.file_manager .file .file-info small .date {
     float: right;
+}
+
+.file_manager #file-name {
+    display: flex;
+    justify-content: space-between;
 }
 
 .folder {
@@ -110,14 +121,32 @@
     }
 }
 
-.card {
+.file_manager #card_container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 1rem;
+    overflow: auto;
+}
+
+.file_manager .card_wrapper {
+    position: relative;
+    overflow: hidden;
+}
+
+.file_manager .card {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    border: 0;
+    max-width: 100%;
+    height: auto;
     background: #fff;
     transition: 0.5s;
-    border: 0;
     margin-bottom: 30px;
     border-radius: 0.55rem;
     position: relative;
-    width: 100%;
     box-shadow: 0 1px 2px 0 rgb(0 0 0 / 10%);
 }
 

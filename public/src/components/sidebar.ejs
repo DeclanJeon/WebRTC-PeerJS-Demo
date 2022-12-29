@@ -1,0 +1,30 @@
+<style>
+    #fileManager-sidebar {
+        position: fixed;
+        display: none;
+        top: 40%;
+        left: 0.1rem;
+        border-radius: 10px;
+    }
+
+    #fileManager-sidebar i {
+        color: #000
+    }
+</style>
+
+<div id="fileManager-sidebar" class="flex flex-column flex-shrink-0 bg-light">
+    <ul class="nav nav-pills nav-flush flex-column mb-auto text-center">
+        <li class="nav-item">
+            <a id="stop_media_btn" class="nav-link py-3" aria-current="page" title="" data-bs-toggle="tooltip"
+                data-bs-placement="right" data-bs-original-title="Home">
+                <i class="fas fa-stop fa-lg"></i>
+            </a>
+        </li>
+        <li>
+            <a id="media_broadcastList" class="nav-link py-3" title="" data-bs-toggle="tooltip"
+                data-bs-placement="right" data-bs-original-title="Dashboard">
+                <i class="fas fa-list-alt fa-lg"></i>
+            </a>
+        </li>
+    </ul>
+</div>
