@@ -13,12 +13,7 @@ const constraints = {
         latency: 0,
         sampleSize: 16,
     },
-    video: {
-        aspectRatio: { ideal: 1.7777777778 },
-        width: { min: 640, ideal: 1920 },
-        height: { min: 400, ideal: 1080 },
-        frameRate: { max: 30 },
-    },
+    video: true,
 };
 
 const displayMediaConfig = {

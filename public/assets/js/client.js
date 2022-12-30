@@ -55,6 +55,9 @@ let videoSender = null;
 let audioSender = null;
 let peerConnection = null; // RTCPeerConnection
 let peerConnections = {}; // keep track of our peer connections, indexed by peer_id == socket.io id
+
+let peerMediaElements = {};
+
 let conn = null;
 let conns = [];
 
@@ -71,19 +74,38 @@ const myBrowserName = DetectRTC.browser.name;
 // facingMode: { exact: "environment" }
 // 참고 : https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
 
+peer.on("open", async (id) => {
+    peerList.push(id);
+    myPeerId = id;
+
+    local__video = selectDom("#local__video");
+    if (local__video) {
+        local__video.classList.add(id);
+    }
+
+    console.log("voice chat on!");
+
+    await joinToChannel();
+    await videoCall();
+});
+
 async function videoCall() {
     getConnectedDevices();
-    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+    const stream = await navigator.mediaDevices
+        .getUserMedia(constraints)
+        .catch((err) => {
+            alert(err.message);
+        });
 
     const lVideo = createDom("video");
     lVideo.id = "local__video";
     lVideo.muted = true;
     lVideo.volume = 0;
 
-    let name_timer = setInterval(() => {
+    let nameInterval = setInterval(() => {
         if (myPeerName !== null || myPeerName !== "") {
-            lVideo.classList.add(myPeerName);
-            clearInterval(name_timer);
+            lVideo.classList.add(myPeerName, peer.id);
+            clearInterval(nameInterval);
         }
     }, 100);
 
@@ -91,22 +113,19 @@ async function videoCall() {
     addVideoStream(lVideo, stream);
     handlerMute(stream);
 
-    let video = null;
-
     try {
         peer.on("call", (call) => {
             console.log("peer Call");
 
-            video = createDom("video");
+            const video = createDom("video");
             video.id = "remote__video";
             remotePeer = call.peer;
-            video.className = remotePeer;
 
             getPeers = JSON.parse(sessionStorage.getItem("peerArr"));
 
             getPeers.forEach((peer) => {
                 if (peer[1].peer_id === call.peer) {
-                    video.classList.add(peer[1].peer_name);
+                    video.classList.add(peer[1].peer_name, remotePeer);
                 }
             });
 
@@ -116,7 +135,7 @@ async function videoCall() {
                 if (!peerList.includes(call.peer)) {
                     currentPeer = call.peerConnection;
                     currentPeerId = call.peer;
-                    userName = video.classList[1];
+                    userName = video.classList[0];
                     addVideoStream(video, userVideoStream);
                 }
             });
@@ -144,36 +163,20 @@ socket.on("user-connected", async (config) => {
     }
 
     const userId = config.peer_id;
+    console.log(config);
     await connectToNewUser(userId, userName, myVideoStream);
-});
-
-peer.on("open", async (id) => {
-    peerList.push(id);
-    myPeerId = id;
-
-    local__video = selectDom("#local__video");
-    if (local__video) {
-        local__video.classList.add(id);
-    }
-
-    console.log("voice chat on!");
 });
 
 async function connectToNewUser(userId, userName, stream) {
     console.log("Connect To New User...");
-    let call = null;
-    if (userId !== null) {
-        call = await peer.call(userId, stream);
-        call.peer_name = userName;
-    }
+    const call = await peer.call(userId, stream);
 
-    if (call !== null || call.peer !== null) {
+    if (call !== undefined) {
         const video = createDom("video");
         video.setAttribute("id", "remote__video");
         call.on("stream", (userVideoStream) => {
             if (!peerList.includes(call.peer)) {
-                video.className = call.peer;
-                video.classList.add(userName);
+                video.classList.add(userName, call.peer);
                 remotePeer = call.peer;
                 addVideoStream(video, userVideoStream);
                 currentPeer = call.peerConnection;
@@ -191,8 +194,6 @@ async function connectToNewUser(userId, userName, stream) {
         });
 
         peers[userId] = call;
-    } else {
-        console.log("Call is not Peer Call");
     }
 }
 
@@ -203,6 +204,8 @@ let peerInterval = setInterval(() => {
             // here you have conn.id
             conn.send("hi!");
         });
+
+        conns.push(conn);
         clearInterval(peerInterval);
     }
 }, 500);
@@ -233,6 +236,9 @@ function addVideoStream(elem, stream) {
         videoCtr.id = "video__container";
         nameSpan.id = "userName";
         videoCtr.append(elem, nameSpan);
+
+        getPeerMediaElements(videoCtr);
+
         videoGrid.append(videoCtr);
 
         if (elem.id === "local__video") {
@@ -249,6 +255,12 @@ function addVideoStream(elem, stream) {
     });
 }
 
+const getPeerMediaElements = (elem) => {
+    const peerId = sessionStorage.getItem("peer-id");
+    peerMediaElements[peerId] = elem;
+    console.log(peerMediaElements[peerId]);
+};
+
 /************************** Screen Share Code ************************ */
 
 const shareScreen = async () => {
@@ -259,6 +271,8 @@ const shareScreen = async () => {
     } catch (err) {
         console.error("unable to get display media: " + err.message);
     }
+
+    local__video = selectDom("#local__video");
 
     video_storage.push(local__video.srcObject);
     local__video.srcObject = captureStream;
@@ -374,16 +388,15 @@ async function handleConnect() {
     mySocketId = socket.id;
     console.log("04. My Socket id [ " + mySocketId + " ]");
 
-    myPeerName = prompt("Input the Name");
+    // myPeerName = prompt("Input the Name");
 
     if (myPeerName === null || myPeerName === "") {
         myPeerName = makeId(10);
     }
 
     sessionStorage.setItem("peer-name", myPeerName);
+    sessionStorage.setItem("peer-id", peer.id);
     sessionStorage.setItem("socket-id", mySocketId);
-    await videoCall();
-    await joinToChannel();
 }
 
 /**
@@ -443,5 +456,6 @@ function handleRemovePeer(config) {
 /*************************** Common Modules End ************************* */
 
 initClientPeer();
+
 shareScreenBtn.addEventListener("click", shareScreen);
 showChat.addEventListener("click", chat);
