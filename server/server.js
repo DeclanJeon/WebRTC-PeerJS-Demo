@@ -1,5 +1,7 @@
 import { Server } from "socket.io";
 
+import "./config.js";
+
 import express from "express";
 const app = express();
 import cors from "cors";
@@ -24,6 +26,36 @@ const port = process.env.PORT || 3000; // must be the same to client.js signalin
 let channels = {}; // collect channels
 let sockets = {}; // collect sockets
 let peers = {}; // collect peers info grp by channels
+
+// Stun config
+const stun = process.env.STUN || "stun:stun.l.google.com:19302";
+
+// Turn config
+const turnEnabled = process.env.TURN_ENABLED || false;
+const turnUrls = process.env.TURN_URLS;
+const turnUsername = process.env.TURN_USERNAME;
+const turnCredential = process.env.TURN_PASSWORD;
+
+const iceServers = [];
+
+// Stun is always needed
+iceServers.push({ urls: stun });
+
+if (turnEnabled == "true") {
+    iceServers.push({
+        urls: turnUrls,
+        username: turnUsername,
+        credential: turnCredential,
+    });
+} else {
+    // As backup if not configured, please configure your own in the .env file
+    // https://www.metered.ca/tools/openrelay/
+    iceServers.push({
+        urls: "turn:openrelay.metered.ca:443",
+        username: "openrelayproject",
+        credential: "openrelayproject",
+    });
+}
 
 let io, server, host;
 
@@ -92,6 +124,13 @@ app.use((req, res, next) => {
     res.setHeader("Access-Control-Max-Age", "3600");
 
     next();
+});
+
+app.get("/api/v1/getIceServer", async (req, res) => {
+    return res.status(200).json({
+        success: true,
+        iceServers: iceServers,
+    });
 });
 
 io = new Server({
@@ -184,13 +223,12 @@ io.sockets.on("connect", async (socket) => {
 
         log.debug("[Join] - connected peers grp by roomId", peers);
 
-        await socket.join(channel);
+        // await socket.join(channel);
 
-        await addPeerTo(channel);
-
-        channels[channel][peerId] = socket;
+        channels[channel][socket_id] = socket;
         socket.channels[channel] = channel;
 
+        await addPeerTo(channel);
         const socket_msg = "user-connected";
 
         sendToRoom(channel, socket_id, socket_msg, peers[channel][socket_id]);
@@ -218,14 +256,13 @@ io.sockets.on("connect", async (socket) => {
             await channels[channel][id].emit("addPeer", {
                 peer_id: socket.id,
                 peers: peers[channel],
-                should_create_offer: false,
+                iceServers: iceServers,
             });
             // offer true
             socket.emit("addPeer", {
                 peer_id: id,
-                socket_id: socket.id,
                 peers: peers[channel],
-                should_create_offer: true,
+                iceServers: iceServers,
             });
             log.debug("[" + socket.id + "] emit addPeer [" + id + "]");
         }
@@ -330,6 +367,7 @@ server.listen(port, null, () => {
     );
 
     log.debug("settings", {
+        iceServers: iceServers,
         server: host,
         node_version: process.versions.node,
     });

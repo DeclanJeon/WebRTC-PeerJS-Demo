@@ -13,7 +13,7 @@ import {
     selectDom,
     selectAllDom,
 } from "./module.js";
-import { handleAddPeer, getPeerInfo } from "./vo.js";
+import { getPeerInfo } from "./vo.js";
 
 const shareScreenBtn = document.getElementById("shareScreen");
 const showChat = selectDom("#showChat");
@@ -85,7 +85,9 @@ peer.on("open", async (id) => {
 
     console.log("voice chat on!");
 
-    await joinToChannel();
+    if (!myVideoStream) {
+        await joinToChannel();
+    }
     await videoCall();
 });
 
@@ -282,6 +284,7 @@ const shareScreen = async () => {
         screenActivate = true;
     } else {
         alert("Current Peer is Empty.");
+        local__video.srcObject = video_storage[0];
     }
 
     captureStream.getVideoTracks()[0].addEventListener("ended", () => {
@@ -316,15 +319,15 @@ async function getDisplayMedia(options) {
 
 export function replaceStream(peerConnection, mediaStream) {
     for (let sender of peerConnection.getSenders()) {
-        if (sender.track.kind == "audio") {
-            if (mediaStream.getAudioTracks().length > 0) {
-                sender.replaceTrack(mediaStream.getAudioTracks()[0]);
-            }
-        }
-
         if (sender.track.kind == "video") {
             if (mediaStream.getVideoTracks().length > 0) {
                 sender.replaceTrack(mediaStream.getVideoTracks()[0]);
+            }
+        }
+
+        if (sender.track.kind == "audio") {
+            if (mediaStream.getAudioTracks().length > 0) {
+                sender.replaceTrack(mediaStream.getAudioTracks()[0]);
             }
         }
     }
@@ -399,12 +402,19 @@ async function handleConnect() {
     sessionStorage.setItem("socket-id", mySocketId);
 }
 
+async function handleAddPeer(config) {
+    // console.log("addPeer", JSON.stringify(config));
+    let peers = config.peers;
+    let peerArr = Object.entries(peers);
+    sessionStorage.setItem("peerArr", JSON.stringify(peerArr));
+}
+
 /**
  * join to channel and send some peer info
  */
 async function joinToChannel() {
     const roomId = ROOM_ID;
-    console.log("12. join to channel", roomId);
+    console.log("05. join to channel", roomId);
 
     sessionStorage.setItem("channel", roomId);
 
@@ -455,7 +465,7 @@ function handleRemovePeer(config) {
 
 /*************************** Common Modules End ************************* */
 
-initClientPeer();
+window.addEventListener("load", initClientPeer);
 
 shareScreenBtn.addEventListener("click", shareScreen);
 showChat.addEventListener("click", chat);

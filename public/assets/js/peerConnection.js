@@ -1,15 +1,22 @@
+let saveIceServer = [];
+let iceServers;
+
+const getIceServers = async () => {
+    let result = await axios.get("/api/v1/getIceServer");
+    return saveIceServer.push(result.data.iceServers);
+};
+
+getIceServers();
+
+if (saveIceServer.length > 0) {
+    iceServers = saveIceServer[0];
+}
+
 const peer = new Peer(undefined, {
     initiator: true,
     trickle: false,
     config: {
-        iceServers: [
-            { url: "stun:stun.l.google.com:19302" },
-            {
-                url: "turn:35.181.134.238:3478",
-                username: "owake",
-                credential: "1234",
-            },
-        ],
+        iceServers: iceServers,
         sdpSemantics: "unified-plan",
     },
 });

@@ -177,12 +177,11 @@
 }
 
 #video-grid > #video__container {
-    /* flex: 1; */
+    flex: 1;
     position: relative;
     object-fit: cover;
     width: var(--width);
     /* height: var(--height); */
-    flex: 0.5;
 }
 
 #userName {
