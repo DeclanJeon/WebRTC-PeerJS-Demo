@@ -120,6 +120,10 @@ const inputCardData = (pName, fName, fType, fSize, fDate) => {
                 </div>
             </div>
         </div>
+
+        <div class="progress">
+            <div class="progress-bar" role="progressbar" aria-label="Example with label" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
     </div>
     `;
 
@@ -190,7 +194,19 @@ function FileReaderEvent(file) {
 
     reader.onprogress = (e) => {
         const result = ~~((e.loaded / e.total) * 100);
-        console.log("Progress", result, "%");
+        const progress = selectAllDom(".progress > .progress-bar");
+
+        progress.forEach((elem) => {
+            if (
+                elem.parentElement.parentElement.children[0].outerText.includes(
+                    file.name
+                )
+            ) {
+                elem.style.setProperty("width", `${result}%`);
+                elem.textContent = `${result}%`;
+                console.log("Progress", result, "%");
+            }
+        });
     };
 
     reader.onloadend = (e) => {
@@ -213,9 +229,6 @@ function FileReaderEvent(file) {
 }
 
 const handleReadVideoFile = (video) => {
-    saveCamStream["cam"] = video.srcObject;
-    video.srcObject = null;
-
     addDomBeforeEnd(video.parentElement, ctrlElem);
     handleFileMediaCtrl(video);
     handleLoadVideoFile(video);
@@ -278,14 +291,11 @@ const handleClickFile = (file) => {
 
 const handleStopAndStartMedia = (video, camStream) => {
     // const mediaChangeBtn = selectDom("#stop_media_btn > i");
-
     handleLoadCam(video, camStream);
 
     if (saveCamStream["cam"] !== undefined && currentPeer !== undefined) {
         replaceStream(currentPeer, saveCamStream["cam"]);
     }
-
-    URL.revokeObjectURL(fileObjConvertURL);
 
     // if (state === "stop") {
     // mediaChangeBtn.classList.replace("fa-stop", "fa-play");
