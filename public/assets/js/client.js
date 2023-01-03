@@ -1,8 +1,8 @@
 "use strict";
 
-import { handlerMute } from "./mute.js";
 import { socket } from "./socketConnection.js";
 import { peer } from "./peerConnection.js";
+import { handlerMute } from "./mute.js";
 import { constraints, displayMediaConfig } from "./rtc_settings.js";
 import { chat } from "./chat.js";
 import {
@@ -85,6 +85,10 @@ peer.on("open", async (id) => {
 
     console.log("voice chat on!");
 
+    sessionStorage.setItem("peer-name", myPeerName);
+    sessionStorage.setItem("peer-id", myPeerId);
+    sessionStorage.setItem("socket-id", mySocketId);
+
     if (!myVideoStream) {
         await joinToChannel();
     }
@@ -93,6 +97,7 @@ peer.on("open", async (id) => {
 
 async function videoCall() {
     getConnectedDevices();
+
     const stream = await navigator.mediaDevices
         .getUserMedia(constraints)
         .catch((err) => {
@@ -396,10 +401,6 @@ async function handleConnect() {
     if (myPeerName === null || myPeerName === "") {
         myPeerName = makeId(10);
     }
-
-    sessionStorage.setItem("peer-name", myPeerName);
-    sessionStorage.setItem("peer-id", peer.id);
-    sessionStorage.setItem("socket-id", mySocketId);
 }
 
 async function handleAddPeer(config) {
@@ -465,7 +466,7 @@ function handleRemovePeer(config) {
 
 /*************************** Common Modules End ************************* */
 
-window.addEventListener("load", initClientPeer);
+initClientPeer();
 
 shareScreenBtn.addEventListener("click", shareScreen);
 showChat.addEventListener("click", chat);

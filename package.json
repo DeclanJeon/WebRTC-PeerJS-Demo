@@ -29,7 +29,8 @@
         "path": "^0.12.7",
         "peerjs": "^1.4.7",
         "socket.io": "^4.5.4",
-        "util": "^0.12.5"
+        "util": "^0.12.5",
+        "webrtc-adapter": "^8.2.0"
     },
     "devDependencies": {
         "nodemon": "^2.0.20"

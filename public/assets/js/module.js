@@ -3,6 +3,20 @@ import { socket } from "./socketConnection.js";
 let isHttps = false;
 let body = document.body;
 
+const groupBy = (data, key) => {
+    return data.reduce(function (carry, el) {
+        let group = el[key];
+
+        if (carry[group] === undefined) {
+            carry[group] = [];
+        }
+
+        carry[group].push(el);
+
+        return carry;
+    }, {});
+};
+
 /**
  * Generate random Room id if not set
  * @returns {string} Room Id
@@ -189,4 +203,5 @@ export {
     sendToServer,
     getConnectedDevices,
     niceBytes,
+    groupBy,
 };
