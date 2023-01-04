@@ -68,9 +68,14 @@ const inventoryDisable = () => {
 };
 
 const handleReadFile = (evt) => {
-    let file = evt.target.files[0];
-    registerFileInfo(file);
-    handleClickFile(file);
+    let files = evt.target.files;
+    let file;
+
+    for (let i = 0; i < files.length; i++) {
+        file = files[i];
+        registerFileInfo(file);
+        handleClickFile(file);
+    }
 
     const delFiles = selectAllDom("#file-trash");
     if (delFiles.length > 0) {
@@ -90,22 +95,25 @@ const registerFileInfo = (file) => {
     let fSize;
     let fDate = moment().format("YYYY/MM/DD/HH:MM");
 
-    if (getPeer !== undefined) {
-        fileInfoObj[getPeer.peer_id] = {
-            file_name: file.name,
-            peerInfo: getPeer,
-            fileInfo: file,
-        };
+    if (file) {
+        if (getPeer !== undefined) {
+            fileInfoObj[getPeer.peer_id] = {
+                file_name: file.name,
+                peerInfo: getPeer,
+                fileInfo: file,
+            };
 
-        fileInfoArr.push(fileInfoObj[getPeer.peer_id]);
+            fileInfoArr.push(fileInfoObj[getPeer.peer_id]);
 
-        pName = getPeer.peer_name;
-        fName = fileInfoObj[getPeer.peer_id].fileInfo.name;
-        fType = fileInfoObj[getPeer.peer_id].fileInfo.type;
-        fSize = fileInfoObj[getPeer.peer_id].fileInfo.size;
-        fDate = fDate;
-
+            pName = getPeer.peer_name;
+            fName = fileInfoObj[getPeer.peer_id].fileInfo.name;
+            fType = fileInfoObj[getPeer.peer_id].fileInfo.type;
+            fSize = fileInfoObj[getPeer.peer_id].fileInfo.size;
+            fDate = fDate;
+        }
         inputCardData(pName, fName, fType, fSize, fDate);
+    } else {
+        alert("The file is not registered.");
     }
 };
 
@@ -129,9 +137,15 @@ const inputCardData = (pName, fName, fType, fSize, fDate) => {
                 <div class="file-info">
                     <div id="file-name" class="mb-2 text-muted">
                         <span>${fName}</span>
-                        <span id="file-trash">
-                            <i class="fas fa-trash"></i>
-                        </span>
+
+                        <div class="file-options">
+                            <span id="file-share">
+                                <i class="fas fa-share"></i>
+                            </span>
+                            <span id="file-trash">
+                                <i class="fas fa-trash"></i>
+                            </span>
+                        </div>
                     </div>
                     <small><span class="file-size">Size: ${f_size}</span> <span class="date text-muted">${fDate}</span></small>
                 </div>
@@ -305,8 +319,7 @@ const handleFileMediaPause = (elem) => {
 
 const handleClickFile = (file) => {
     const files = selectAllDom(".file");
-    console.log(files);
-    if (files) {
+    if (files.length > 0) {
         files.forEach((elem) => {
             elem.addEventListener("click", (e) => {
                 if (
@@ -344,8 +357,16 @@ const handleStopAndStartMedia = (video, camStream) => {
 };
 
 const handleLoadCam = async (video, stream) => {
-    video.srcObject = stream;
     video.src = "";
+    video.srcObject = stream;
+
+    camStreamOn = true;
+    if (camStreamOn) {
+        fileStreamOn = false;
+
+        const video = selectDom("#local__video");
+        video.style.setProperty("object-fit", "cover");
+    }
 };
 
 const maybeCreateStream = () => {
@@ -413,12 +434,15 @@ const handleReadTextFile = (txt) => {};
 const handleReadExcelFile = (excel) => {};
 
 export const handleDelFile = (evt) => {
+    console.log(evt.target);
+
     const evtParents =
         evt.target.parentElement.parentElement.parentElement.parentElement
-            .parentElement;
+            .parentElement.parentElement.parentElement;
 
     const evtFileName =
-        evt.target.parentElement.parentElement.children[0].innerText;
+        evt.target.parentElement.parentElement.parentElement.parentElement
+            .children[0].children[0].innerText;
     const getPeer = getFindIdEggshells();
     for (let i = 0; i < fileInfoArr.length; i++) {
         if (fileInfoArr[i].file_name === evtFileName) {
@@ -426,22 +450,48 @@ export const handleDelFile = (evt) => {
         }
     }
 
+    console.log(evtParents);
+
     evtParents.remove();
     console.log(fileInfoArr);
 };
 
 /********************* Element Variable ********************/
 
-const popupFileBroadCastListElem = (type, fname, pname) => {
+const popupFileBroadCastListElem = () => {
+    let fname;
+    let ftype;
+    let pname;
+
+    let iconType;
+
+    if (fileInfoArr.length > 0) {
+        fileInfoArr.forEach((obj) => {
+            fname = obj.file_name;
+            ftype = obj.fileInfo.type;
+            pname = obj.peerInfo.peer_name;
+        });
+    }
+
+    if (ftype.includes("video")) {
+        iconType = "fa-video";
+    } else if (ftype.includes("audio")) {
+        iconType = "fa-music";
+    } else if (ftype.includes("pdf")) {
+        iconType = "fa-file-pdf";
+    } else if (ftype.includes("word")) {
+        iconType = "fa-file-word";
+    }
+
     const elem = `
     <div id="boardCastList" class="container">
         <div class="row cant d-flex justify-content-center align-items-center">
             <div class="col-md-6">
                 <div class="p-3 card">
-                    <div class="d-flex justify-content-between align-items-center p-3 music">
+                    <div class="d-flex justify-content-between align-items-center p-3 ${ftype}">
                         <div class="d-flex flex-row align-items-center">
-                            <i class="fa fa-music color"></i>
-                            <small class="ml-2">Shannon jin pride - The Usual [Beat, Jess Scott]</small>
+                            <i class="fas ${iconType}"></i>&nbsp;
+                            <small class="ml-2">${fname} - Uploader [${pname}]</small>
                         </div>
                         <i class="fa fa-check color"></i>
                     </div>
@@ -491,7 +541,7 @@ const popupFileManagerElem = () => {
                     
                     <div class="file_manager_footer mb-3">
                         <label for="addFile" id="addFile_label" class="form-label btn btn-primary">Add File</label>
-                        <input class="form-control border border-2 border-success" type="file" id="addFile" hidden="true">
+                        <input class="form-control border border-2 border-success" type="file" multiple id="addFile" hidden="true">
                     </div> 
                 </div>
             </div>

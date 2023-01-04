@@ -81,11 +81,11 @@
     justify-content: space-between;
 }
 
-.file-info > #file-name > span {
+.file-info > #file-name span {
     cursor: pointer;
 }
 
-.file-info > #file-name > span:hover {
+.file-info > #file-name span:hover {
     color: red;
 }
 
