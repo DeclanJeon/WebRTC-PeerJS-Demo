@@ -2,6 +2,12 @@ import { socket } from "./socketConnection.js";
 
 let body = document.body;
 
+const trackStop = (stream) => {
+    stream.getTracks().forEach((track) => {
+        track.stop();
+    });
+};
+
 const groupBy = (data, key) => {
     return data.reduce(function (carry, el) {
         let group = el[key];
@@ -197,4 +203,5 @@ export {
     sendToServer,
     niceBytes,
     groupBy,
+    trackStop,
 };

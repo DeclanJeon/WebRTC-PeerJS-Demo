@@ -1,4 +1,4 @@
-import { selectDom } from "./module.js";
+import { selectDom, trackStop } from "./module.js";
 import { getConstraints } from "./rtc_config.js";
 
 ("use strict");
@@ -21,7 +21,9 @@ settingBtn.addEventListener("click", () => {
 const settingWrapperEnable = () => {
     const s_ctr = selectDom(".settings-container");
     s_ctr.hidden = false;
-    getDevice();
+    if (s_ctr.hidden === false) {
+        getDevice();
+    }
 };
 
 const settingWrapperDisable = () => {
@@ -106,9 +108,8 @@ function gotStream(stream) {
     if (l_video) {
         window.stream = stream; // make stream available to console
         l_video.srcObject = stream;
+        return navigator.mediaDevices.enumerateDevices();
     }
-    // Refresh button list in case labels have become available
-    // return navigator.mediaDevices.enumerateDevices();
 }
 
 function handleError(error) {
@@ -119,16 +120,8 @@ function handleError(error) {
     );
 }
 
-const trackStop = () => {
-    if (window.stream) {
-        window.stream.getTracks().forEach((track) => {
-            track.stop();
-        });
-    }
-};
-
 async function deviceChange() {
-    trackStop();
+    trackStop(window.stream);
 
     const audioSource = audioInputSelect.value;
     const videoSource = videoSelect.value;

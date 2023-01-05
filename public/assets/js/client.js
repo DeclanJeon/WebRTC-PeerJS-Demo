@@ -11,6 +11,7 @@ import {
     createDom,
     selectDom,
     selectAllDom,
+    trackStop,
 } from "./module.js";
 import { getPeerInfo } from "./vo.js";
 
@@ -175,7 +176,6 @@ socket.on("user-connected", async (config) => {
     }
 
     const userId = config.peer_id;
-    console.log(config);
     await connectToNewUser(userId, userName, myVideoStream);
 });
 
@@ -270,7 +270,7 @@ function addVideoStream(elem, stream) {
 const getPeerMediaElements = (elem) => {
     const peerId = sessionStorage.getItem("peer-id");
     peerMediaElements[peerId] = elem;
-    console.log(peerMediaElements[peerId]);
+    // console.log(peerMediaElements[peerId]);
 };
 
 /************************** Cam GUI ********************************** */

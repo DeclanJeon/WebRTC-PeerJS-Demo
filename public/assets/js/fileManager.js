@@ -291,6 +291,7 @@ const handleLoadVideoFile = (video) => {
     if (video.readyState >= 3) {
         maybeCreateStream();
     }
+    video.play();
 };
 
 const handleFileMediaCtrl = (video) => {
@@ -366,14 +367,12 @@ const handleLoadCam = async (video, stream) => {
         const video = selectDom("#local__video");
         video.style.setProperty("object-fit", "cover");
     }
+    video.play();
 };
 
 const maybeCreateStream = () => {
     let localVideo = selectDom("#local__video");
 
-    if (saveFileStream["file"]) {
-        return;
-    }
     if (localVideo.captureStream) {
         saveFileStream["file"] = localVideo.captureStream();
         console.log(
@@ -433,8 +432,6 @@ const handleReadTextFile = (txt) => {};
 const handleReadExcelFile = (excel) => {};
 
 export const handleDelFile = (evt) => {
-    console.log(evt.target);
-
     const evtParents =
         evt.target.parentElement.parentElement.parentElement.parentElement
             .parentElement.parentElement.parentElement;
@@ -442,17 +439,16 @@ export const handleDelFile = (evt) => {
     const evtFileName =
         evt.target.parentElement.parentElement.parentElement.parentElement
             .children[0].children[0].innerText;
-    const getPeer = getFindIdEggshells();
     for (let i = 0; i < fileInfoArr.length; i++) {
         if (fileInfoArr[i].file_name === evtFileName) {
             delete fileInfoArr[i];
         }
     }
 
-    console.log(evtParents);
+    // console.log(evtParents);
 
     evtParents.remove();
-    console.log(fileInfoArr);
+    // console.log(fileInfoArr);
 };
 
 /********************* Element Variable ********************/
