@@ -64,14 +64,20 @@
                     <div id="showFiles" class="options__button">
                         <i class="fas fa-file"></i>
                     </div>
+
+                    <div id="deviceSettings" class="options__button">
+                        <i class="fas fa-cogs"></i>
+                    </div>
                 </div>
             </div>
 
             <%-include ("../components/sidebar.ejs") %>
+                <%-include ("../components/settings.ejs") %>
         </div>
     </div>
     <script async defer type="module" src="js/client.js"></script>
     <script async defer type="module" src="js/fileManager.js"></script>
+    <script async defer type="module" src="js/deviceSetting.js"></script>
 </body>
 
 </html>

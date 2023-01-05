@@ -3,12 +3,11 @@
 import { socket } from "./socketConnection.js";
 import { peer } from "./peerConnection.js";
 import { handlerMute } from "./mute.js";
-import { constraints, displayMediaConfig } from "./rtc_config.js";
+import { getConstraints, displayMediaConfig } from "./rtc_config.js";
 import { chat } from "./chat.js";
 import {
     sendToServer,
     makeId,
-    getConnectedDevices,
     createDom,
     selectDom,
     selectAllDom,
@@ -90,25 +89,25 @@ peer.on("open", async (id) => {
     sessionStorage.setItem("socket-id", mySocketId);
 
     if (!myVideoStream) {
-        await joinToChannel();
+        await joinToChannel(id);
     }
-    await videoCall();
 });
 
 async function videoCall() {
-    getConnectedDevices();
+    let lVideo;
+
+    const config = getConstraints();
 
     const stream = await navigator.mediaDevices
-        .getUserMedia(constraints)
+        .getUserMedia(config)
         .catch((err) => {
             alert(err.message);
         });
 
-    const lVideo = createDom("video");
+    lVideo = createDom("video");
     lVideo.id = "local__video";
     lVideo.muted = true;
     lVideo.volume = 0;
-
     let nameInterval = setInterval(() => {
         if (myPeerName !== null || myPeerName !== "") {
             lVideo.classList.add(myPeerName, peer.id);
@@ -117,9 +116,15 @@ async function videoCall() {
     }, 100);
 
     myVideoStream = stream;
+    window.stream = stream;
+
     addVideoStream(lVideo, stream);
     handlerMute(stream);
 
+    handlePeerCall(stream);
+}
+
+const handlePeerCall = async (stream) => {
     try {
         peer.on("call", (call) => {
             console.log("peer Call");
@@ -162,7 +167,7 @@ async function videoCall() {
     } catch (err) {
         console.log(err.message);
     }
-}
+};
 
 socket.on("user-connected", async (config) => {
     if (myPeerName !== config.peer_name) {
@@ -518,7 +523,7 @@ async function handleAddPeer(config) {
 /**
  * join to channel and send some peer info
  */
-async function joinToChannel() {
+async function joinToChannel(id) {
     const roomId = ROOM_ID;
     console.log("05. join to channel", roomId);
 
@@ -527,10 +532,12 @@ async function joinToChannel() {
     await sendToServer("join", {
         channel: roomId,
         peerName: myPeerName,
-        peer_id: peer.id,
+        peer_id: id,
         peer_info: peerInfo,
         socket_id: mySocketId,
     });
+
+    await videoCall();
 }
 
 function handleDisconnect(reason) {

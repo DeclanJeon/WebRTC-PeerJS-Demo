@@ -1,6 +1,5 @@
 import { socket } from "./socketConnection.js";
 
-let isHttps = false;
 let body = document.body;
 
 const groupBy = (data, key) => {
@@ -159,11 +158,6 @@ function scrollToBottom(elem) {
     d.scrollTop = d.scrollHeight;
 }
 
-const getConnectedDevices = async () => {
-    let devices = await navigator.mediaDevices.enumerateDevices();
-    return devices;
-};
-
 function niceBytes(x) {
     const units = ["bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
     let l = 0,
@@ -201,7 +195,6 @@ export {
     draggable,
     scrollToBottom,
     sendToServer,
-    getConnectedDevices,
     niceBytes,
     groupBy,
 };

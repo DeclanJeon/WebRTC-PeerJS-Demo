@@ -4,7 +4,7 @@
 
 /* import module css */
 @import url("./fileManager.css");
-@import url("./setting.css");
+@import url("./settings.css");
 
 :root {
     --main-darklg: #1d2635;
@@ -12,12 +12,44 @@
     --primary-color: #2f80ec;
     --main-light: #eeeeee;
     --button-color-Cobalt-Blue: #3b5682;
-    font-family: "Poppins", sans-serif;
 }
 
 * {
     margin: 0;
     padding: 0;
+}
+
+@font-face {
+    font-family: "NEXON Lv2 Gothic";
+    src: url("../fonts/NEXON_Lv2_Gothic.eot");
+    src: url("../fonts/NEXON_Lv2_Gothic.woff");
+    src: url("../fonts/NEXON_Lv2_Gothic?#iefix") format("embedded-opentype");
+}
+
+@font-face {
+    font-family: "NEXON Lv2 Gothic Light";
+    src: url("../fonts/NEXON_Lv2_Gothic_Light.eot");
+    src: url("../fonts/NEXON_Lv2_Gothic_Light.woff");
+    src: url("../fonts/NEXON_Lv2_Gothic_Light?#iefix")
+        format("embedded-opentype");
+}
+
+@font-face {
+    font-family: "NEXON Lv2 Gothic Bold";
+    src: url("../fonts/NEXON_Lv2_Gothic_Bold.eot");
+    src: url("../fonts/NEXON_Lv2_Gothic_Bold.woff");
+    src: url("../fonts/NEXON_Lv2_Gothic_Bold?#iefix")
+        format("embedded-opentype");
+}
+
+body,
+html {
+    -webkit-overflow-scrolling: auto;
+    touch-action: auto;
+    font-family: "NEXON Lv2 Gothic" !important;
+    margin: 0;
+    padding: 0;
+    background-color: var(--main-darking);
 }
 
 .logo {
@@ -171,7 +203,7 @@
     position: relative;
     display: flex;
     gap: 1rem;
-    flex-wrap: wrap;
+    /* flex-wrap: wrap; */
     justify-content: center;
     width: 100%;
     height: 90%;
