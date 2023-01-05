@@ -1,4 +1,16 @@
+import { getConstraints } from "./rtc_config.js";
+
 const peerLoockupUrl = "https://extreme-ip-lookup.com/json/?key=demo2"; // get your API Key at https://extreme-ip-lookup.com
+
+const getUserStream = async (audio, video) => {
+    const config = getConstraints(audio, video);
+    const stream = await navigator.mediaDevices
+        .getUserMedia(config)
+        .catch((err) => {
+            alert(err.message);
+        });
+    return stream;
+};
 
 function getSessionPeer() {
     let peerList = [];
@@ -46,4 +58,4 @@ function countPeerConnections() {
     return Object.keys(peerConnections).length;
 }
 
-export { getPeerInfo };
+export { getPeerInfo, getUserStream };

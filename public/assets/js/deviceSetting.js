@@ -1,5 +1,6 @@
 import { selectDom, trackStop } from "./module.js";
-import { getConstraints } from "./rtc_config.js";
+import { currentPeer, replaceStream } from "./client.js";
+import { getUserStream } from "./vo.js";
 
 ("use strict");
 
@@ -108,6 +109,14 @@ function gotStream(stream) {
     if (l_video) {
         window.stream = stream; // make stream available to console
         l_video.srcObject = stream;
+
+        let streamInterval = setInterval(() => {
+            if (currentPeer !== undefined) {
+                clearInterval(streamInterval);
+                replaceStream(currentPeer, stream);
+            }
+        }, 500);
+
         return navigator.mediaDevices.enumerateDevices();
     }
 }
@@ -126,12 +135,11 @@ async function deviceChange() {
     const audioSource = audioInputSelect.value;
     const videoSource = videoSelect.value;
 
-    const config = getConstraints(audioSource, videoSource);
+    // const stream = await navigator.mediaDevices
+    //     .getUserMedia(config)
+    //     .catch(handleError);
 
-    const stream = await navigator.mediaDevices
-        .getUserMedia(config)
-        .catch(handleError);
-
+    const stream = await getUserStream(audioSource, videoSource);
     gotStream(stream);
 }
 

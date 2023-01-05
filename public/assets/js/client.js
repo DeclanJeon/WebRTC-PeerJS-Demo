@@ -3,7 +3,8 @@
 import { socket } from "./socketConnection.js";
 import { peer } from "./peerConnection.js";
 import { handlerMute } from "./mute.js";
-import { getConstraints, displayMediaConfig } from "./rtc_config.js";
+import { displayMediaConfig } from "./rtc_config.js";
+import { getUserStream } from "./vo.js";
 import { chat } from "./chat.js";
 import {
     sendToServer,
@@ -97,13 +98,7 @@ peer.on("open", async (id) => {
 async function videoCall() {
     let lVideo;
 
-    const config = getConstraints();
-
-    const stream = await navigator.mediaDevices
-        .getUserMedia(config)
-        .catch((err) => {
-            alert(err.message);
-        });
+    const stream = await getUserStream();
 
     lVideo = createDom("video");
     lVideo.id = "local__video";
