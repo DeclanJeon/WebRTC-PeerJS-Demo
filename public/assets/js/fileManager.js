@@ -80,7 +80,6 @@ const handleReadFile = (evt) => {
     const delFiles = selectAllDom("#file-trash");
     if (delFiles.length > 0) {
         delFiles.forEach((trash) => {
-            trash.add;
             trash.addEventListener("click", handleDelFile);
         });
     }
@@ -136,7 +135,7 @@ const inputCardData = (pName, fName, fType, fSize, fDate) => {
                 </div>
                 <div class="file-info">
                     <div id="file-name" class="mb-2 text-muted">
-                        <span>${fName}</span>
+                        <pre>${fName}</pre>
 
                         <div class="file-options">
                             <span id="file-share">

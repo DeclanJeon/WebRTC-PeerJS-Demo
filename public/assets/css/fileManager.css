@@ -20,11 +20,6 @@
     display: block;
 }
 
-.file_manager .file-info small {
-    display: flex;
-    gap: 5px;
-}
-
 .file_manager .file {
     padding: 0 !important;
     position: relative;
@@ -79,12 +74,19 @@
 .file-info > #file-name {
     display: flex;
     justify-content: space-between;
+    gap: 10px;
+}
+
+.file-info > #file-name pre {
+    cursor: pointer;
+    white-space: pre-wrap;
 }
 
 .file-info > #file-name span {
     cursor: pointer;
 }
 
+.file-info > #file-name pre:hover,
 .file-info > #file-name span:hover {
     color: red;
 }
@@ -144,6 +146,7 @@
 
 .file_manager .card_wrapper {
     position: relative;
+    width: 23%;
     overflow: hidden;
 }
 
@@ -165,4 +168,14 @@
 
 a:hover {
     text-decoration: none;
+}
+
+.fileList_card .file-info span {
+    width: 100%;
+}
+
+.file-info .file-options {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
 }
