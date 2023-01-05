@@ -3,7 +3,7 @@
 import { socket } from "./socketConnection.js";
 import { peer } from "./peerConnection.js";
 import { handlerMute } from "./mute.js";
-import { constraints, displayMediaConfig } from "./rtc_settings.js";
+import { constraints, displayMediaConfig } from "./rtc_config.js";
 import { chat } from "./chat.js";
 import {
     sendToServer,
@@ -267,6 +267,111 @@ const getPeerMediaElements = (elem) => {
     peerMediaElements[peerId] = elem;
     console.log(peerMediaElements[peerId]);
 };
+
+/************************** Cam GUI ********************************** */
+// const stopRtc = () => {
+//     const lVideo = selectDom("#local__video");
+//     if (myVideoStream)
+//         myVideoStream.getTracks().forEach((track) => track.stop());
+//     lVideo.style.setProperty("display", "none");
+// };
+// const runRtc = (constraints) => {
+//     const lVideo = selectDom("#local__video");
+//     stopRtc();
+//     navigator.mediaDevices
+//         .getUserMedia(constraints)
+//         .then((mediaStream) => {
+//             lVideo.style.setProperty("display", "block");
+//             stream = window.stream = mediaStream;
+//             lVideo.srcObject = mediaStream;
+//             lVideo.play();
+//         })
+//         .catch((err) => {
+//             if (
+//                 err.name == "NotFoundError" ||
+//                 err.name == "DevicesNotFoundError"
+//             ) {
+//                 //required track is missing
+//             } else if (
+//                 err.name == "NotReadableError" ||
+//                 err.name == "TrackStartError"
+//             ) {
+//                 //webcam or mic are already in use
+//             } else if (
+//                 err.name == "OverconstrainedError" ||
+//                 err.name == "ConstraintNotSatisfiedError"
+//             ) {
+//                 alert(
+//                     "Please check the resolution supported by the camcorder. The selected resolution is not supported."
+//                 );
+//                 //constraints can not be satisfied by avb. devices
+//             } else if (
+//                 err.name == "NotAllowedError" ||
+//                 err.name == "PermissionDeniedError"
+//             ) {
+//                 //permission denied in browser
+//             } else if (err.name == "TypeError" || err.name == "TypeError") {
+//                 //empty constraints object
+//             } else {
+//                 //other errors
+//             }
+//         });
+// };
+// const setConstraints = (w, h, mode) => {
+//     let constraints;
+
+//     if (mode === null) {
+//         constraints = {
+//             audio: false,
+//             video: {
+//                 width: { exact: w },
+//                 height: { exact: h },
+//                 facingMode: { exact: mode },
+//             },
+//         };
+//     } else {
+//         constraints = {
+//             audio: false,
+//             video: {
+//                 width: { exact: w },
+//                 height: { exact: h },
+//             },
+//         };
+//     }
+
+//     return constraints;
+// };
+
+// const params = {
+//     runQVGA: () => runRtc(setConstraints(320, 240, null)),
+//     runVGA: () => runRtc(setConstraints(640, 480, null)),
+//     runWVGA: () => runRtc(setConstraints(800, 480, null)),
+//     runSVGA: () => runRtc(setConstraints(800, 600, null)),
+//     runXGA: () => runRtc(setConstraints(1024, 768, null)),
+//     runSXGA: () => runRtc(setConstraints(1280, 1024, null)),
+//     runUXGA: () => runRtc(setConstraints(1600, 1200, null)),
+//     runQXGA: () => runRtc(setConstraints(2048, 1536, null)),
+
+//     rtcFront: () => runRtc(setConstraints(640, 480, "user")),
+//     rtcBack: () => runRtc(setConstraints(640, 480, "environment")),
+//     stopRTC: () => stopRtc(),
+// };
+// const gui = new dat.GUI();
+// const rtcFolder = gui.addFolder("WebRTC");
+
+// rtcFolder.add(params, "runQVGA").name("QVGA(320x240)");
+// rtcFolder.add(params, "runVGA").name("VGA(640x480)");
+// rtcFolder.add(params, "runWVGA").name("WVGA(800x480)");
+// rtcFolder.add(params, "runSVGA").name("SVGA(800x600)");
+// rtcFolder.add(params, "runXGA").name("XGA(1024x768)");
+// rtcFolder.add(params, "runSXGA").name("SXGA(1280x1024)");
+// rtcFolder.add(params, "runUXGA").name("UXGA(1600x1200)");
+// rtcFolder.add(params, "runQXGA").name("QXGA(2048x1536)");
+// rtcFolder.add(params, "rtcFront").name("Camera Front");
+// rtcFolder.add(params, "rtcBack").name("Camera Back");
+// rtcFolder.add(params, "stopRTC").name("Stop Stream");
+// rtcFolder.open();
+/************************** Cam GUI END ****************************** */
 
 /************************** Screen Share Code ************************ */
 

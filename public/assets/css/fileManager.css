@@ -146,8 +146,8 @@
 
 .file_manager .card_wrapper {
     position: relative;
-    width: 23%;
     overflow: hidden;
+    max-width: 250px;
 }
 
 .file_manager .card {

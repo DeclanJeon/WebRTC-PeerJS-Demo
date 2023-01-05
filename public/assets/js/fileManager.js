@@ -322,7 +322,7 @@ const handleClickFile = (file) => {
         files.forEach((elem) => {
             elem.addEventListener("click", (e) => {
                 if (
-                    e.target.tagName === "SPAN" &&
+                    e.target.tagName === "PRE" &&
                     e.target.textContent === file.name
                 ) {
                     FileReaderEvent(file);

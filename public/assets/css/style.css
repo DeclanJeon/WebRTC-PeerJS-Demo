@@ -4,6 +4,7 @@
 
 /* import module css */
 @import url("./fileManager.css");
+@import url("./setting.css");
 
 :root {
     --main-darklg: #1d2635;
