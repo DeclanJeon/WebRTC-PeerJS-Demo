@@ -53,6 +53,8 @@ const handleChatEvent = () => {
 
     // const peerArr = JSON.parse(localStorage.getItem("peerArr"));
 
+    let msgObj = {};
+
     send.addEventListener("click", (e) => {
         date = moment().format("YYYY/MM/DD/HH:MM");
         if (text.value.length !== 0) {
@@ -63,6 +65,16 @@ const handleChatEvent = () => {
                 msg: text.value,
                 date: date,
             });
+
+            msgObj = {
+                peer_name: sessionStorage.getItem("peer-name"),
+                channel: sessionStorage.getItem("channel"),
+                socket_id: sessionStorage.getItem("socket-id"),
+                msg: text.value,
+                date: date,
+            };
+
+            handleMessage(msgObj);
             text.value = "";
         }
     });
@@ -77,12 +89,21 @@ const handleChatEvent = () => {
                 msg: text.value,
                 date: date,
             });
+
+            msgObj = {
+                peer_name: sessionStorage.getItem("peer-name"),
+                channel: sessionStorage.getItem("channel"),
+                socket_id: sessionStorage.getItem("socket-id"),
+                msg: text.value,
+                date: date,
+            };
+            handleMessage(msgObj);
             text.value = "";
         }
     });
 };
 
-socket.on("receiveMsg", (config) => {
+const handleMessage = (params) => {
     const messageList = document.getElementById("messages");
     const userNameArea = document.createElement("div");
     const messageArea = document.createElement("div");
@@ -95,7 +116,7 @@ socket.on("receiveMsg", (config) => {
     dateArea.className = "date";
     messageArea.append(msgText, dateArea);
 
-    if (config.peer_name !== sessionStorage.getItem("peer-name")) {
+    if (params.peer_name !== sessionStorage.getItem("peer-name")) {
         userNameArea.style.setProperty("margin-right", "auto");
         messageArea.style.setProperty("margin-right", "auto");
         dateArea.style.setProperty("margin-right", "auto");
@@ -105,15 +126,18 @@ socket.on("receiveMsg", (config) => {
         dateArea.style.setProperty("margin-left", "auto");
     }
 
-    userNameArea.textContent = config.peer_name;
-    msgText.textContent = config.msg;
-    dateArea.textContent = config.date;
+    userNameArea.textContent = params.peer_name;
+    msgText.textContent = params.msg;
+    dateArea.textContent = params.date;
 
     if (messageList) {
         messageList.append(userNameArea, messageArea);
+        scrollToBottom("popup__chat_window");
     }
+};
 
-    scrollToBottom("popup__chat_window");
+socket.on("receiveMsg", (config) => {
+    handleMessage(config);
 });
 
 export { chat };
