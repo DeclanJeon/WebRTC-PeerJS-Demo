@@ -2,22 +2,32 @@
 @import url("./broadcastList.css");
 
 .file_manager_container {
-    background-color: #f4f7f6;
-    margin-top: 20px;
-
     position: absolute;
+    display: flex;
+    flex-direction: column;
     top: 50%;
     left: 50%;
     z-index: 11;
     transform: translate(-50%, -50%);
     height: 70vh;
     width: 70vw;
+    background-color: #f4f7f6;
+    margin-top: 20px;
     overflow: auto;
+}
+
+.file_manager_container > nav {
+    flex: 0.1;
 }
 
 .file_manager .file a:hover .hover,
 .file_manager .file {
     display: block;
+}
+
+.file_manager {
+    flex: 0.9;
+    overflow: auto;
 }
 
 .file_manager .file {
@@ -108,7 +118,7 @@
 }
 
 .file_manager_footer {
-    position: absolute;
+    position: fixed;
     display: flex;
     align-items: center;
     justify-content: center;

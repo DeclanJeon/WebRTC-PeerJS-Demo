@@ -208,7 +208,7 @@ function FileReaderEvent(file) {
 
     function seek() {
         const chunks = [];
-        const numberOfSlices = 1000;
+        const numberOfSlices = 10;
         const chunkSize = Math.ceil(file.size / numberOfSlices);
 
         for (let i = 0; i < numberOfSlices; i += 1) {

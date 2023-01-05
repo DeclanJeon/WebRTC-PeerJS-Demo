@@ -7,7 +7,7 @@ const getUserStream = async (audio, video) => {
     const stream = await navigator.mediaDevices
         .getUserMedia(config)
         .catch((err) => {
-            alert(err.message);
+            alert(`getUserStream Error! ${err.message}`);
         });
     return stream;
 };

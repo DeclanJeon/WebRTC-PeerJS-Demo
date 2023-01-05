@@ -2,6 +2,26 @@ import { socket } from "./socketConnection.js";
 
 let body = document.body;
 
+/**
+ * Save to PC / Mobile devices
+ * https://developer.mozilla.org/en-US/docs/Web/API/Blob
+ * @param {object} blob content
+ * @param {string} file to save
+ */
+function saveBlobToFile(blob, file) {
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.style.display = "none";
+    a.href = url;
+    a.download = file;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    }, 100);
+}
+
 const trackStop = (stream) => {
     stream.getTracks().forEach((track) => {
         track.stop();
